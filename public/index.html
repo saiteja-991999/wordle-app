@@ -6,16 +6,14 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Wordle Game</title>
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
     <style>
-      /* Fallback for theme before React is loaded */
+      /* Fallback theme (light) before React app is initialized */
       body {
         background-color: #f5f5dc; /* beige (light mode) */
         color: #111827;
       }
+
       .dark-mode body {
         background-color: #0b1220; /* dark mode */
         color: #e6eef8;
@@ -24,5 +22,17 @@
   </head>
   <body>
     <div id="root"></div>
+    
+    <script>
+      // Adjust viewport height dynamically to handle Safari issue
+      function adjustViewportHeight() {
+        const vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--app-height', `${vh * 100}px`);
+      }
+
+      // Call function on load and on resize
+      window.addEventListener('load', adjustViewportHeight);
+      window.addEventListener('resize', adjustViewportHeight);
+    </script>
   </body>
 </html>
