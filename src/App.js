@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Board from "./components/Board";
 import Keyboard from "./components/Keyboard";
 import MessageModal from "./components/MessageModal";
@@ -53,20 +53,23 @@ function App() {
     fetchAnswer();
   }, []);
 
-  const handleKey = (key) => {
-    if (message) return;
-    if (guesses.length >= MAX_GUESSES) return;
+  const handleKey = useCallback(
+    (key) => {
+      if (message) return;
+      if (guesses.length >= MAX_GUESSES) return;
 
-    if (key === "ENTER") {
-      if (currentGuess.length === WORD_LENGTH) {
-        submitGuess();
+      if (key === "ENTER") {
+        if (currentGuess.length === WORD_LENGTH) {
+          submitGuess();
+        }
+      } else if (key === "DEL") {
+        setCurrentGuess(currentGuess.slice(0, -1));
+      } else if (/^[A-Z]$/.test(key) && currentGuess.length < WORD_LENGTH) {
+        setCurrentGuess((prevGuess) => prevGuess + key);
       }
-    } else if (key === "DEL") {
-      setCurrentGuess(currentGuess.slice(0, -1));
-    } else if (/^[A-Z]$/.test(key) && currentGuess.length < WORD_LENGTH) {
-      setCurrentGuess((prevGuess) => prevGuess + key);
-    }
-  };
+    },
+    [currentGuess, guesses, message]
+  );
 
   const submitGuess = () => {
     if (currentGuess.length !== WORD_LENGTH) return;
@@ -115,7 +118,7 @@ function App() {
     };
     window.addEventListener("keydown", handlePhysicalKey);
     return () => window.removeEventListener("keydown", handlePhysicalKey);
-  }, [currentGuess, guesses, message, handleKey]);
+  }, [handleKey, message]);
 
   return (
     <div className="wordle-app">
