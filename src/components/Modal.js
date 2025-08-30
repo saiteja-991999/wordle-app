@@ -44,7 +44,7 @@ function Modal({ onClose, isDarkMode }) {
       onClick={onClose}
     >
       <div className="modal" onClick={(e) => e.stopPropagation()}>
-        <h3>Edit Settings</h3>
+        <h3>Custom Wordle Generator</h3>
         <input
           type="text"
           value={word}

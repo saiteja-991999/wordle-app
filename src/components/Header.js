@@ -33,7 +33,7 @@ function Header({
           {/* Edit Button */}
           <button
             className="theme-btn"
-            title="Edit Settings"
+            title="Custom Wordle Generator"
             onClick={openModal}
           >
             ✏️
