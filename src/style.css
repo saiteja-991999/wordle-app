@@ -6,10 +6,10 @@
   --tile-bg: #ffffff;
   --tile-border: #d1d5db;
   --key-bg: #e5e7eb;
+  --key-color: #111827;
   --muted: #6b7280;
-  --shadow: 0 6px 18px rgba(15,23,42,0.08);
+  --shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
 }
-
 .dark-mode {
   --bg-start: #0b1220;
   --bg-end: #000000;
@@ -18,21 +18,21 @@
   --tile-bg: #0f1724;
   --tile-border: #374151;
   --key-bg: #111827;
+  --key-color: #e5e7eb;
   --muted: #9ca3af;
-  --shadow: 0 8px 24px rgba(2,6,23,0.6);
+  --shadow: 0 8px 24px rgba(2, 6, 23, 0.6);
 }
-
 * {
   box-sizing: border-box;
 }
-
-html, body, #root {
+html,
+body,
+#root {
   height: 100%;
 }
-
 body {
   margin: 0;
-  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
 }
 
 .wordle-app {
@@ -45,7 +45,6 @@ body {
   color: var(--text);
   transition: background 300ms, color 300ms;
 }
-
 .container {
   width: 100%;
   max-width: 1100px;
@@ -54,19 +53,16 @@ body {
   flex-direction: column;
   padding: 28px 20px;
 }
-
 .header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
 }
-
 .title {
   font-size: 20px;
   font-weight: 700;
 }
-
 .theme-btn {
   height: 40px;
   width: 40px;
@@ -78,7 +74,6 @@ body {
   cursor: pointer;
   box-shadow: var(--shadow);
 }
-
 .main-area {
   flex: 1;
   display: flex;
@@ -88,33 +83,28 @@ body {
   justify-content: center;
   margin-top: 12px;
 }
-
 .board-wrap {
   flex: 1 1 auto;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-
 .keyboard-wrap {
   display: flex;
   align-items: center;
   justify-content: center;
 }
-
 .board {
   width: 100%;
   max-width: 760px;
   display: grid;
   gap: 10px;
 }
-
 .row {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   gap: 10px;
 }
-
 .tile {
   width: 100%;
   padding-top: 100%;
@@ -126,9 +116,9 @@ body {
   color: var(--text);
   font-weight: 700;
   font-size: 18px;
-  transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
+  transition: transform 120ms ease, box-shadow 120ms ease,
+    border-color 120ms ease;
 }
-
 .tile-inner {
   position: absolute;
   inset: 0;
@@ -136,25 +126,21 @@ body {
   align-items: center;
   justify-content: center;
 }
-
 .tile--correct {
   background: #16a34a;
   border-color: #15803d;
   color: #fff;
 }
-
 .tile--present {
   background: #f59e0b;
   border-color: #d97706;
   color: #fff;
 }
-
 .tile--absent {
   background: #6b7280;
   border-color: #4b5563;
   color: #fff;
 }
-
 .tile--active {
   border-color: #2563eb;
   box-shadow: 0 12px 30px rgba(37, 99, 235, 0.18);
@@ -170,13 +156,11 @@ body {
   border-radius: 12px;
   background: transparent;
 }
-
 .key-row {
   display: flex;
   gap: 8px;
   justify-content: center;
 }
-
 .key {
   flex: 1 1 0;
   min-width: 36px;
@@ -187,13 +171,11 @@ body {
   font-weight: 700;
   cursor: pointer;
   box-shadow: var(--shadow);
-  border-color: var(--key-bg);
+  color: var(--key-color);
 }
-
 .key.wide {
   min-width: 72px;
 }
-
 .key[disabled] {
   opacity: 0.5;
   cursor: not-allowed;
@@ -217,7 +199,6 @@ body {
   backdrop-filter: blur(6px);
   z-index: 60;
 }
-
 .modal {
   background: var(--panel);
   color: var(--text);
@@ -228,7 +209,6 @@ body {
   max-width: 420px;
   text-align: center;
 }
-
 .btn {
   padding: 10px 14px;
   border-radius: 10px;
@@ -236,12 +216,10 @@ body {
   cursor: pointer;
   font-weight: 700;
 }
-
 .btn.primary {
   background: #10b981;
   color: white;
 }
-
 .btn.ghost {
   background: transparent;
   border: 1px solid var(--tile-border);

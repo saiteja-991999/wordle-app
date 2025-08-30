@@ -30,7 +30,9 @@ function App() {
 
   const fetchAnswer = async () => {
     try {
-      const response = await fetch("https://random-word-api.herokuapp.com/word?length=6");
+      const response = await fetch(
+        "https://random-word-api.herokuapp.com/word?length=6"
+      );
       const data = await response.json();
       setAnswer(data[0].toUpperCase());
     } catch (error) {
@@ -96,18 +98,39 @@ function App() {
     if (guess === answer) {
       setMessage({ title: "You got it!", text: `🎉 Correct — ${answer}` });
     } else if (guesses.length === MAX_GUESSES - 1) {
-      setMessage({ title: "Out of chances", text: `❌ The word was ${answer}` });
+      setMessage({
+        title: "Out of chances",
+        text: `❌ The word was ${answer}`,
+      });
     }
   };
 
+  useEffect(() => {
+    const handlePhysicalKey = (e) => {
+      const key = e.key.toUpperCase();
+      if (message) return;
+      if (key === "ENTER") handleKey("ENTER");
+      else if (key === "BACKSPACE") handleKey("DEL");
+      else if (/^[A-Z]$/.test(key)) handleKey(key);
+    };
+    window.addEventListener("keydown", handlePhysicalKey);
+    return () => window.removeEventListener("keydown", handlePhysicalKey);
+  }, [currentGuess, guesses, message]);
+
   return (
     <div className="wordle-app">
-      <Header darkMode={darkMode} setDarkMode={setDarkMode} />
-      <div className="main-area">
-        <Board guesses={guesses} statuses={statuses} currentGuess={currentGuess} />
-        <Keyboard handleKey={handleKey} />
+      <div className="container">
+        <Header darkMode={darkMode} setDarkMode={setDarkMode} />
+        <div className="main-area">
+          <Board
+            guesses={guesses}
+            statuses={statuses}
+            currentGuess={currentGuess}
+          />
+          <Keyboard handleKey={handleKey} />
+        </div>
+        {message && <MessageModal message={message} resetGame={resetGame} />}
       </div>
-      {message && <MessageModal message={message} resetGame={resetGame} />}
     </div>
   );
 }
