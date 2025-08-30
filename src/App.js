@@ -14,6 +14,7 @@ function App() {
   const [darkMode, setDarkMode] = useState(false);
   const [message, setMessage] = useState(null);
   const [answer, setAnswer] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem("wordleTheme");
@@ -27,6 +28,23 @@ function App() {
     else root.classList.remove("dark-mode");
     localStorage.setItem("wordleTheme", darkMode ? "dark" : "light");
   }, [darkMode]);
+
+  // Get the "word" query parameter from the URL
+  const getWordFromUrl = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get("word");
+  };
+
+  // Set the answer based on the URL query parameter or fallback to an API call
+  const setGameAnswer = () => {
+    const wordFromUrl = getWordFromUrl();
+    const encryptedWord = decodeURIComponent(atob(wordFromUrl));
+    if (encryptedWord && encryptedWord.length === 6) {
+      setAnswer(encryptedWord); // Set answer to the URL word if it's valid
+    } else {
+      fetchAnswer(); // Fetch a new word if the URL doesn't contain a valid word
+    }
+  };
 
   const fetchAnswer = async () => {
     try {
@@ -42,6 +60,7 @@ function App() {
   };
 
   const resetGame = () => {
+    window.history.replaceState(null, "", window.location.pathname);
     setGuesses([]);
     setStatuses([]);
     setCurrentGuess("");
@@ -49,8 +68,9 @@ function App() {
     fetchAnswer();
   };
 
+  // Fetch answer and check the URL parameter on initial load
   useEffect(() => {
-    fetchAnswer();
+    setGameAnswer();
   }, []);
 
   // Use useCallback to memoize submitGuess
@@ -98,6 +118,7 @@ function App() {
   // handleKey using useCallback
   const handleKey = useCallback(
     (key) => {
+      if (isModalOpen) return;
       if (message) return;
       if (guesses.length >= MAX_GUESSES) return;
 
@@ -111,11 +132,12 @@ function App() {
         setCurrentGuess((prevGuess) => prevGuess + key);
       }
     },
-    [currentGuess, guesses, message, submitGuess] // Include submitGuess as a dependency
+    [currentGuess, guesses, message, submitGuess, isModalOpen] // Include submitGuess as a dependency
   );
 
   useEffect(() => {
     const handlePhysicalKey = (e) => {
+      if (isModalOpen) return;
       const key = e.key.toUpperCase();
       if (message) return;
       if (key === "ENTER") handleKey("ENTER");
@@ -124,12 +146,17 @@ function App() {
     };
     window.addEventListener("keydown", handlePhysicalKey);
     return () => window.removeEventListener("keydown", handlePhysicalKey);
-  }, [handleKey, message]);
+  }, [handleKey, message, isModalOpen]);
 
   return (
     <div className="wordle-app">
       <div className="container">
-        <Header darkMode={darkMode} setDarkMode={setDarkMode} />
+        <Header
+          darkMode={darkMode}
+          setDarkMode={setDarkMode}
+          isModalOpen={isModalOpen}
+          setIsModalOpen={setIsModalOpen}
+        />
         <div className="main-area">
           <Board
             guesses={guesses}
