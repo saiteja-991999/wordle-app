@@ -1,8 +1,13 @@
 import React from "react";
 import Modal from "./Modal"; // Import the Modal component
 
-function Header({ darkMode, setDarkMode, isModalOpen, setIsModalOpen }) {
-
+function Header({
+  darkMode,
+  setDarkMode,
+  isModalOpen,
+  setIsModalOpen,
+  heading,
+}) {
   const openModal = () => {
     setIsModalOpen(true);
   };
@@ -11,15 +16,11 @@ function Header({ darkMode, setDarkMode, isModalOpen, setIsModalOpen }) {
     setIsModalOpen(false);
   };
 
-  const handleSave = () => {
-    console.log("Settings saved!");
-    closeModal();
-  };
 
   return (
     <>
       <div className="header">
-        <div className="title">Six-letter Wordle</div>
+        <div className="title">{heading}</div>
         <div style={{ display: "flex", gap: 8 }}>
           <button
             className="theme-btn"
@@ -40,7 +41,7 @@ function Header({ darkMode, setDarkMode, isModalOpen, setIsModalOpen }) {
         </div>
       </div>
 
-      {isModalOpen && <Modal onClose={closeModal} onSave={handleSave} />}
+      {isModalOpen && <Modal onClose={closeModal}  />}
     </>
   );
 }
