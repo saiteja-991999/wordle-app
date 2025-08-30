@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import Modal from "./Modal"; // Import the Modal component
 
 function Header({ darkMode, setDarkMode, isModalOpen, setIsModalOpen }) {

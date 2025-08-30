@@ -29,24 +29,7 @@ function App() {
     localStorage.setItem("wordleTheme", darkMode ? "dark" : "light");
   }, [darkMode]);
 
-  // Get the "word" query parameter from the URL
-  const getWordFromUrl = () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get("word");
-  };
-
-  // Set the answer based on the URL query parameter or fallback to an API call
-  const setGameAnswer = () => {
-    const wordFromUrl = getWordFromUrl();
-    const encryptedWord = decodeURIComponent(atob(wordFromUrl));
-    if (encryptedWord && encryptedWord.length === 6) {
-      setAnswer(encryptedWord); // Set answer to the URL word if it's valid
-    } else {
-      fetchAnswer(); // Fetch a new word if the URL doesn't contain a valid word
-    }
-  };
-
-  const fetchAnswer = async () => {
+  const fetchAnswer = useCallback(async () => {
     try {
       const response = await fetch(
         "https://random-word-api.herokuapp.com/word?length=6"
@@ -57,7 +40,24 @@ function App() {
       console.error("Error fetching word:", error);
       setAnswer("PLANET");
     }
-  };
+  }, [setAnswer]);
+
+  // Get the "word" query parameter from the URL
+  const getWordFromUrl = useCallback(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get("word");
+  }, []);
+
+  // Set the answer based on the URL query parameter or fallback to an API call
+  const setGameAnswer = useCallback(() => {
+    const wordFromUrl = getWordFromUrl();
+    const encryptedWord = decodeURIComponent(atob(wordFromUrl));
+    if (encryptedWord && encryptedWord.length === 6) {
+      setAnswer(encryptedWord); // Set answer to the URL word if it's valid
+    } else {
+      fetchAnswer(); // Fetch a new word if the URL doesn't contain a valid word
+    }
+  }, [getWordFromUrl, fetchAnswer, setAnswer]);
 
   const resetGame = () => {
     window.history.replaceState(null, "", window.location.pathname);
@@ -71,7 +71,7 @@ function App() {
   // Fetch answer and check the URL parameter on initial load
   useEffect(() => {
     setGameAnswer();
-  }, []);
+  }, [setGameAnswer]);
 
   // Use useCallback to memoize submitGuess
   const submitGuess = useCallback(() => {
