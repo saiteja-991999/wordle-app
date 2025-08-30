@@ -7,8 +7,7 @@ function MessageModal({ message, resetGame }) {
         <h3>{message.title}</h3>
         <p>{message.text}</p>
         <div style={{ display: "flex", justifyContent: "center", marginTop: 12 }}>
-          <button className="btn ghost" onClick={resetGame}>Close</button>
-          <button className="btn primary" onClick={resetGame}>Play again</button>
+          <button className="btn primary" onClick={resetGame}>Play New Game</button>
         </div>
       </div>
     </div>
