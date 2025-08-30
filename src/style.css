@@ -199,6 +199,16 @@ body {
   backdrop-filter: blur(6px);
   z-index: 60;
 }
+.modal-input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 16px; /* Adds a gap between the input and the button */
+  font-size: 16px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  box-sizing: border-box;
+  font-weight: 600;
+}
 .modal {
   background: var(--panel);
   color: var(--text);
@@ -224,7 +234,7 @@ body {
   background: transparent;
   border: 1px solid var(--tile-border);
   color: var(--text);
-  margin-right: 8px;
+  margin-left: 8px;
 }
 
 @media (min-width: 900px) {

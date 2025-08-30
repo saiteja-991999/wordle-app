@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import Board from "./components/Board";
 import Keyboard from "./components/Keyboard";
 import MessageModal from "./components/MessageModal";
@@ -15,6 +15,7 @@ function App() {
   const [message, setMessage] = useState(null);
   const [answer, setAnswer] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const answerRef = useRef("Wordle");
 
   useEffect(() => {
     const saved = localStorage.getItem("wordleTheme");
@@ -53,6 +54,7 @@ function App() {
     const wordFromUrl = getWordFromUrl();
     const encryptedWord = decodeURIComponent(atob(wordFromUrl));
     if (encryptedWord && encryptedWord.length === 6) {
+      answerRef.current = "Custom Wordle";
       setAnswer(encryptedWord); // Set answer to the URL word if it's valid
     } else {
       fetchAnswer(); // Fetch a new word if the URL doesn't contain a valid word
@@ -61,6 +63,7 @@ function App() {
 
   const resetGame = () => {
     window.history.replaceState(null, "", window.location.pathname);
+    answerRef.current = "Wordle";
     setGuesses([]);
     setStatuses([]);
     setCurrentGuess("");
@@ -156,6 +159,7 @@ function App() {
           setDarkMode={setDarkMode}
           isModalOpen={isModalOpen}
           setIsModalOpen={setIsModalOpen}
+          heading={answerRef.current}
         />
         <div className="main-area">
           <Board

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-function Modal({ onClose, onSave, isDarkMode }) {
+function Modal({ onClose, isDarkMode }) {
   const [word, setWord] = useState("");
   const [generatedUrl, setGeneratedUrl] = useState("");
   const [error, setError] = useState("");
@@ -52,11 +52,15 @@ function Modal({ onClose, onSave, isDarkMode }) {
           placeholder="Enter 6-letter word"
           maxLength="6"
           onKeyDown={handleKeyDown}
+          className="modal-input"
         />
         {error && <p style={{ color: "red" }}>{error}</p>}
 
         <button className="btn primary" onClick={handleGenerate}>
           Generate
+        </button>
+        <button className="btn ghost" onClick={onClose}>
+          Close
         </button>
 
         {generatedUrl && (
@@ -66,19 +70,13 @@ function Modal({ onClose, onSave, isDarkMode }) {
             <button className="btn ghost" onClick={handleCopy}>
               Copy URL
             </button>
+            <button className="btn ghost">
+              <a href={generatedUrl} target="_blank" rel="noreferrer">
+                Play
+              </a>
+            </button>
           </div>
         )}
-
-        <div
-          style={{ display: "flex", justifyContent: "center", marginTop: 12 }}
-        >
-          <button className="btn ghost" onClick={onClose}>
-            Close
-          </button>
-          <button className="btn primary" onClick={onSave}>
-            Save
-          </button>
-        </div>
       </div>
     </div>
   );
