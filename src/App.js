@@ -115,7 +115,7 @@ function App() {
     };
     window.addEventListener("keydown", handlePhysicalKey);
     return () => window.removeEventListener("keydown", handlePhysicalKey);
-  }, [currentGuess, guesses, message]);
+  }, [currentGuess, guesses, message, handleKey]);
 
   return (
     <div className="wordle-app">
