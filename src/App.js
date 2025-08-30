@@ -53,24 +53,6 @@ function App() {
     fetchAnswer();
   }, []);
 
-  const handleKey = useCallback(
-    (key) => {
-      if (message) return;
-      if (guesses.length >= MAX_GUESSES) return;
-
-      if (key === "ENTER") {
-        if (currentGuess.length === WORD_LENGTH) {
-          submitGuess();
-        }
-      } else if (key === "DEL") {
-        setCurrentGuess(currentGuess.slice(0, -1));
-      } else if (/^[A-Z]$/.test(key) && currentGuess.length < WORD_LENGTH) {
-        setCurrentGuess((prevGuess) => prevGuess + key);
-      }
-    },
-    [currentGuess, guesses, message]
-  );
-
   const submitGuess = () => {
     if (currentGuess.length !== WORD_LENGTH) return;
 
@@ -107,6 +89,25 @@ function App() {
       });
     }
   };
+
+  // Fix the missing dependency error in useCallback
+  const handleKey = useCallback(
+    (key) => {
+      if (message) return;
+      if (guesses.length >= MAX_GUESSES) return;
+
+      if (key === "ENTER") {
+        if (currentGuess.length === WORD_LENGTH) {
+          submitGuess(); // Ensure submitGuess is included in the dependency array
+        }
+      } else if (key === "DEL") {
+        setCurrentGuess(currentGuess.slice(0, -1));
+      } else if (/^[A-Z]$/.test(key) && currentGuess.length < WORD_LENGTH) {
+        setCurrentGuess((prevGuess) => prevGuess + key);
+      }
+    },
+    [currentGuess, guesses, message, submitGuess] // Include submitGuess as a dependency
+  );
 
   useEffect(() => {
     const handlePhysicalKey = (e) => {
