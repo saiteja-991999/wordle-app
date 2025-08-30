@@ -53,13 +53,15 @@ function App() {
     fetchAnswer();
   }, []);
 
-  const submitGuess = () => {
+  // Use useCallback to memoize submitGuess
+  const submitGuess = useCallback(() => {
     if (currentGuess.length !== WORD_LENGTH) return;
 
     const guess = currentGuess.toUpperCase();
     const status = Array(WORD_LENGTH).fill("absent");
     const answerArr = answer.split("");
 
+    // First pass: Check for correct letters
     guess.split("").forEach((ch, i) => {
       if (ch === answerArr[i]) {
         status[i] = "correct";
@@ -67,6 +69,7 @@ function App() {
       }
     });
 
+    // Second pass: Check for present letters
     guess.split("").forEach((ch, i) => {
       if (status[i] === "correct") return;
       const idx = answerArr.indexOf(ch);
@@ -76,10 +79,12 @@ function App() {
       }
     });
 
-    setGuesses([...guesses, guess]);
-    setStatuses([...statuses, status]);
+    // Update guesses and statuses using functional setState to ensure latest values
+    setGuesses((prevGuesses) => [...prevGuesses, guess]);
+    setStatuses((prevStatuses) => [...prevStatuses, status]);
     setCurrentGuess("");
 
+    // Check if the guess is correct or out of chances
     if (guess === answer) {
       setMessage({ title: "You got it!", text: `🎉 Correct — ${answer}` });
     } else if (guesses.length === MAX_GUESSES - 1) {
@@ -88,9 +93,9 @@ function App() {
         text: `❌ The word was ${answer}`,
       });
     }
-  };
+  }, [currentGuess, guesses, answer]); // Ensure that submitGuess has the latest state values
 
-  // Fix the missing dependency error in useCallback
+  // handleKey using useCallback
   const handleKey = useCallback(
     (key) => {
       if (message) return;
@@ -98,7 +103,7 @@ function App() {
 
       if (key === "ENTER") {
         if (currentGuess.length === WORD_LENGTH) {
-          submitGuess(); // Ensure submitGuess is included in the dependency array
+          submitGuess(); // Call submitGuess function
         }
       } else if (key === "DEL") {
         setCurrentGuess(currentGuess.slice(0, -1));
