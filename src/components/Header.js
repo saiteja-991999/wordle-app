@@ -27,6 +27,8 @@ function Header({
     setOpen(false);
   };
 
+  const [isHelpOpen, setIsHelpOpen] = useState(false);
+
   return (
     <>
       <div className="header">
@@ -47,6 +49,10 @@ function Header({
             onClick={openModal}
           >
             ✏️
+          </button>
+          {/* Help Icon */}
+          <button className="theme-btn" onClick={() => setIsHelpOpen(true)}>
+            ❓
           </button>
         </div>
       </div>
@@ -80,6 +86,57 @@ function Header({
                 ))}
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Help Modal */}
+      {isHelpOpen && (
+        <div className="modal-overlay" onClick={() => setIsHelpOpen(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <h2 className="modal-title">How to Play</h2>
+
+            <div className="modal-content">
+              <p className="intro-text">
+                Welcome to <strong>Wordle 🎉</strong>
+              </p>
+
+              <ul className="rules-list">
+                <li>Guess the hidden word within limited tries.</li>
+                <li>
+                  <span className="green">🟩</span> means the letter is{" "}
+                  <strong>correct & in the right spot</strong>.
+                </li>
+                <li>
+                  <span className="yellow">🟨</span> means the letter is{" "}
+                  <strong>correct but in the wrong spot</strong>.
+                </li>
+                <li>
+                  <span className="gray">⬛</span> means the letter is{" "}
+                  <strong>not in the word</strong>.
+                </li>
+                <li>
+                  Customise word length (<strong>3–7</strong>) from the dropdown
+                  below the header.
+                </li>
+                <li>
+                  Use the <span className="emoji">✏️</span> button to{" "}
+                  <strong>generate custom Wordles</strong> and share them with
+                  friends.
+                </li>
+                <li>
+                  Toggle <span className="emoji">🌙 / ☀️</span> for Dark & Light
+                  mode.
+                </li>
+              </ul>
+            </div>
+
+            <button
+              className="btn ghost close-btn"
+              onClick={() => setIsHelpOpen(false)}
+            >
+              Close
+            </button>
           </div>
         </div>
       )}
