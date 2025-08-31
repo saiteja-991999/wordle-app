@@ -102,12 +102,11 @@ body {
 }
 .row {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
   gap: 10px;
 }
 .tile {
   width: 100%;
-  padding-top: 100%;
+  /* padding-top: 100%; */
   position: relative;
   border-radius: 10px;
   overflow: hidden;
@@ -116,9 +115,17 @@ body {
   color: var(--text);
   font-weight: 700;
   font-size: 18px;
+  text-transform: uppercase;
+  aspect-ratio: 1 / 1; /* 🔹 keeps square shape */
+  max-width: 60px; /* 🔹 cap width */
+  max-height: 60px; /* 🔹 cap height */
+  min-width: 30px; /* 🔹 prevents being too small */
+  min-height: 30px;
+  margin: auto;
   transition: transform 120ms ease, box-shadow 120ms ease,
     border-color 120ms ease;
 }
+
 .tile-inner {
   position: absolute;
   inset: 0;
@@ -272,4 +279,36 @@ body {
     gap: 6px;
     padding: 6px;
   }
+}
+
+.dropdown {
+  position: relative;
+}
+
+.dropdown-btn {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  color: var(--key-color);
+  background: var(--panel);
+  cursor: pointer;
+  font-weight: 600;
+}
+.dropdown-options {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 4px;
+  background: var(--panel);
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+}
+.dropdown-item {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+.dropdown-item:hover {
+  background: #e5e7eb;
 }

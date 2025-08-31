@@ -7,27 +7,29 @@ function Modal({ onClose, isDarkMode }) {
 
   const handleInputChange = (e) => {
     const inputWord = e.target.value.toUpperCase();
-    if (inputWord.length <= 6) {
+    if (inputWord.length <= 8) {
       setWord(inputWord);
     }
   };
 
   const handleKeyDown = (e) => {
-    e.stopPropagation(); // Prevent propagation to the parent (Wordle grid)
+    e.stopPropagation(); // Prevent affecting Wordle grid
   };
 
   const handleGenerate = () => {
-    if (word.length === 6) {
-      // Get the current website URL
-      const currentUrl = window.location.href;
+    if (word.length >= 3 && word.length <= 8) {
+      // Use base site URL without stacking params
+      const currentUrl = `${window.location.origin}${window.location.pathname}`;
 
-      // Generate the URL by appending a path with the entered word
-      const decryptedWord = btoa(encodeURIComponent(word));
-      const generated = `${currentUrl}?word=${decryptedWord}`;
+      // Encode the word
+      const encryptedWord = btoa(encodeURIComponent(word));
+
+      // Append ?word= param
+      const generated = `${currentUrl}?word=${encryptedWord}`;
       setGeneratedUrl(generated);
       setError("");
     } else {
-      setError("Please enter exactly 6 characters.");
+      setError("Please enter a word between 3 to 8 letters.");
     }
   };
 
@@ -49,8 +51,8 @@ function Modal({ onClose, isDarkMode }) {
           type="text"
           value={word}
           onChange={handleInputChange}
-          placeholder="Enter 6-letter word"
-          maxLength="6"
+          placeholder="Enter 3–8 letter word"
+          maxLength={8}
           onKeyDown={handleKeyDown}
           className="modal-input"
         />

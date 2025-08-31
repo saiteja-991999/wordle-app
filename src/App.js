@@ -4,7 +4,6 @@ import Keyboard from "./components/Keyboard";
 import MessageModal from "./components/MessageModal";
 import Header from "./components/Header";
 
-const WORD_LENGTH = 6;
 const MAX_GUESSES = 6;
 
 function App() {
@@ -16,6 +15,9 @@ function App() {
   const [answer, setAnswer] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const answerRef = useRef("Wordle");
+
+  // 🔹 word length state (default 6)
+  const [wordLength, setWordLength] = useState(6);
 
   useEffect(() => {
     const saved = localStorage.getItem("wordleTheme");
@@ -33,15 +35,15 @@ function App() {
   const fetchAnswer = useCallback(async () => {
     try {
       const response = await fetch(
-        "https://random-word-api.herokuapp.com/word?length=6"
+        `https://random-word-api.herokuapp.com/word?length=${wordLength}`
       );
       const data = await response.json();
       setAnswer(data[0].toUpperCase());
     } catch (error) {
       console.error("Error fetching word:", error);
-      setAnswer("PLANET");
+      setAnswer("PLANET".slice(0, wordLength)); // fallback
     }
-  }, [setAnswer]);
+  }, [wordLength]);
 
   // Get the "word" query parameter from the URL
   const getWordFromUrl = useCallback(() => {
@@ -50,18 +52,26 @@ function App() {
   }, []);
 
   // Set the answer based on the URL query parameter or fallback to an API call
+  // Set the answer based on the URL query parameter or fallback to an API call
   const setGameAnswer = useCallback(() => {
     const wordFromUrl = getWordFromUrl();
-    const encryptedWord = decodeURIComponent(atob(wordFromUrl));
-    if (encryptedWord && encryptedWord.length === 6) {
-      answerRef.current = "Custom Wordle";
-      setAnswer(encryptedWord); // Set answer to the URL word if it's valid
-    } else {
-      fetchAnswer(); // Fetch a new word if the URL doesn't contain a valid word
+    try {
+      if (wordFromUrl) {
+        const encryptedWord = decodeURIComponent(atob(wordFromUrl));
+        if (encryptedWord) {
+          answerRef.current = "Custom Wordle";
+          setWordLength(encryptedWord.length); // 🔹 dynamically update wordLength
+          setAnswer(encryptedWord.toUpperCase());
+          return;
+        }
+      }
+    } catch (e) {
+      console.warn("Invalid word param");
     }
-  }, [getWordFromUrl, fetchAnswer, setAnswer]);
+    fetchAnswer(); // fallback to random API word
+  }, [getWordFromUrl, fetchAnswer]);
 
-  const resetGame = () => {
+  const resetGame = useCallback(() => {
     window.history.replaceState(null, "", window.location.pathname);
     answerRef.current = "Wordle";
     setGuesses([]);
@@ -69,22 +79,25 @@ function App() {
     setCurrentGuess("");
     setMessage(null);
     fetchAnswer();
-  };
+  }, [fetchAnswer]);
 
-  // Fetch answer and check the URL parameter on initial load
+  // 🔹 Fetch answer and reset game whenever wordLength changes
   useEffect(() => {
     setGameAnswer();
-  }, [setGameAnswer]);
+    setGuesses([]);
+    setStatuses([]);
+    setCurrentGuess("");
+    setMessage(null);
+  }, [wordLength, setGameAnswer]);
 
-  // Use useCallback to memoize submitGuess
   const submitGuess = useCallback(() => {
-    if (currentGuess.length !== WORD_LENGTH) return;
+    if (currentGuess.length !== wordLength) return;
 
     const guess = currentGuess.toUpperCase();
-    const status = Array(WORD_LENGTH).fill("absent");
+    const status = Array(wordLength).fill("absent");
     const answerArr = answer.split("");
 
-    // First pass: Check for correct letters
+    // First pass: correct letters
     guess.split("").forEach((ch, i) => {
       if (ch === answerArr[i]) {
         status[i] = "correct";
@@ -92,7 +105,7 @@ function App() {
       }
     });
 
-    // Second pass: Check for present letters
+    // Second pass: present letters
     guess.split("").forEach((ch, i) => {
       if (status[i] === "correct") return;
       const idx = answerArr.indexOf(ch);
@@ -102,12 +115,10 @@ function App() {
       }
     });
 
-    // Update guesses and statuses using functional setState to ensure latest values
     setGuesses((prevGuesses) => [...prevGuesses, guess]);
     setStatuses((prevStatuses) => [...prevStatuses, status]);
     setCurrentGuess("");
 
-    // Check if the guess is correct or out of chances
     if (guess === answer) {
       setMessage({ title: "You got it!", text: `🎉 Correct — ${answer}` });
     } else if (guesses.length === MAX_GUESSES - 1) {
@@ -116,33 +127,27 @@ function App() {
         text: `❌ The word was ${answer}`,
       });
     }
-  }, [currentGuess, guesses, answer]); // Ensure that submitGuess has the latest state values
+  }, [currentGuess, guesses, answer, wordLength]);
 
-  // handleKey using useCallback
   const handleKey = useCallback(
     (key) => {
-      if (isModalOpen) return;
-      if (message) return;
-      if (guesses.length >= MAX_GUESSES) return;
+      if (isModalOpen || message || guesses.length >= MAX_GUESSES) return;
 
       if (key === "ENTER") {
-        if (currentGuess.length === WORD_LENGTH) {
-          submitGuess(); // Call submitGuess function
-        }
+        if (currentGuess.length === wordLength) submitGuess();
       } else if (key === "DEL") {
-        setCurrentGuess(currentGuess.slice(0, -1));
-      } else if (/^[A-Z]$/.test(key) && currentGuess.length < WORD_LENGTH) {
-        setCurrentGuess((prevGuess) => prevGuess + key);
+        setCurrentGuess((prev) => prev.slice(0, -1));
+      } else if (/^[A-Z]$/.test(key) && currentGuess.length < wordLength) {
+        setCurrentGuess((prev) => prev + key);
       }
     },
-    [currentGuess, guesses, message, submitGuess, isModalOpen] // Include submitGuess as a dependency
+    [currentGuess, guesses, message, submitGuess, isModalOpen, wordLength]
   );
 
   useEffect(() => {
     const handlePhysicalKey = (e) => {
-      if (isModalOpen) return;
+      if (isModalOpen || message) return;
       const key = e.key.toUpperCase();
-      if (message) return;
       if (key === "ENTER") handleKey("ENTER");
       else if (key === "BACKSPACE") handleKey("DEL");
       else if (/^[A-Z]$/.test(key)) handleKey(key);
@@ -160,12 +165,15 @@ function App() {
           isModalOpen={isModalOpen}
           setIsModalOpen={setIsModalOpen}
           heading={answerRef.current}
+          wordLength={wordLength}
+          setWordLength={setWordLength}
         />
         <div className="main-area">
           <Board
             guesses={guesses}
             statuses={statuses}
             currentGuess={currentGuess}
+            wordLength={wordLength}
           />
           <Keyboard handleKey={handleKey} />
         </div>
